@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海の命 — 太一の選択</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      background: linear-gradient(180deg, #071020 0%, #0b2e5a 35%, #1060a0 70%, #2090c8 100%);
+      min-height: 100vh;
+      color: #fff;
+      transition: background 0.6s ease;
+    }
+
+    header {
+      text-align: center;
+      padding: 18px 16px 12px;
+      background: rgba(0,0,0,0.4);
+      border-bottom: 1px solid rgba(100,180,255,0.2);
+    }
+    header h1 { font-size: 1.8rem; letter-spacing: 0.1em; text-shadow: 0 2px 12px rgba(0,120,255,0.7); }
+    header p  { font-size: 0.82rem; color: #80b8ff; margin-top: 4px; }
+
+    .stage {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 14px 16px 24px;
+    }
+
+    /* ── 吹き出し ── */
+    .bubble-wrap {
+      min-height: 100px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+    .speech-bubble {
+      background: rgba(255,255,255,0.96);
+      color: #152040;
+      border-radius: 16px;
+      padding: 14px 20px 12px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+      position: relative;
+      transition: all 0.4s ease;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 7px solid transparent;
+      border-top-color: rgba(255,255,255,0.96);
+    }
+    .bubble-text {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      font-weight: 500;
+    }
+    .bubble-source {
+      font-size: 0.72rem;
+      color: #5577aa;
+      text-align: right;
+      margin-top: 6px;
+    }
+
+    /* ── 魚＋表情エリア ── */
+    .fish-area {
+      position: relative;
+      width: 100%;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+    #kueSvg {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 8px 24px rgba(0,40,100,0.6));
+    }
+    .taichi-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 76px;
+      height: 76px;
+      background: rgba(8,18,40,0.75);
+      border: 2px solid rgba(100,180,255,0.4);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      transition: all 0.45s ease;
+    }
+    .taichi-emoji { font-size: 2.1rem; line-height: 1; transition: all 0.4s; }
+    .taichi-mood  { font-size: 0.58rem; color: #aac8ff; margin-top: 3px; text-align: center; line-height: 1.3; }
+
+    /* ── スライダー ── */
+    .slider-panel {
+      background: rgba(0,0,0,0.42);
+      border-radius: 18px;
+      padding: 18px 22px 16px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(100,180,255,0.15);
+      margin-top: 6px;
+    }
+    .slider-ends {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+    .end-left  { color: #ff7070; font-weight: bold; max-width: 46%; }
+    .end-right { color: #60ffb0; font-weight: bold; max-width: 46%; text-align: right; }
+
+    input[type=range] {
+      width: 100%;
+      height: 10px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, #ff6060 0%, #ffcc00 50%, #40ffaa 100%);
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid #0b2e5a;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+
+    .slider-status {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.88rem;
+      color: #c0d8ff;
+      min-height: 22px;
+    }
+
+    /* 葛藤メーター */
+    .meter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 0.78rem;
+      color: #a0c0e0;
+    }
+    .meter-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .meter-fill {
+      height: 100%;
+      background: linear-gradient(to right, #4080ff, #ff80c0);
+      border-radius: 4px;
+      transition: width 0.45s ease;
+    }
+
+    /* ── 語彙パネル ── */
+    .vocab-panel {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(100,180,255,0.18);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+    .vocab-panel h3 {
+      font-size: 0.8rem;
+      color: #80c0ff;
+      margin-bottom: 10px;
+    }
+    .vocab-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .vocab-chip {
+      position: relative;
+      background: rgba(10,50,120,0.55);
+      border: 1px solid rgba(80,160,255,0.3);
+      border-radius: 10px;
+      padding: 7px 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+      user-select: none;
+    }
+    .vocab-chip:hover, .vocab-chip.open { background: rgba(20,80,180,0.75); }
+    .vocab-word    { font-size: 0.88rem; font-weight: bold; }
+    .vocab-reading { font-size: 0.68rem; color: #90b8e8; display: block; margin-top: 1px; }
+    .vocab-tooltip {
+      display: none;
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 160px;
+      background: #071830;
+      border: 1px solid #3a80ff;
+      color: #d0e8ff;
+      border-radius: 10px;
+      padding: 9px 13px;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      z-index: 300;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.55);
+      white-space: normal;
+      text-align: left;
+      pointer-events: none;
+    }
+    .vocab-chip:hover .vocab-tooltip,
+    .vocab-chip.open .vocab-tooltip { display: block; }
+
+    /* スマホ調整 */
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.4rem; }
+      .bubble-text { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌊 海の命</h1>
+  <p>立松和平 著 ／ 太一の選択を体験しよう（小学6年生・国語）</p>
+</header>
+
+<div class="stage">
+
+  <!-- 吹き出し -->
+  <div class="bubble-wrap">
+    <div class="speech-bubble">
+      <div class="bubble-text" id="bubbleText">
+        スライダーを動かして、太一の心の葛藤を体験しよう
+      </div>
+      <div class="bubble-source" id="bubbleSource"></div>
+    </div>
+  </div>
+
+  <!-- クエ＋太一 -->
+  <div class="fish-area">
+    <svg id="kueSvg" viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- 水中の泡 -->
+      <circle cx="30"  cy="230" r="9"  fill="rgba(255,255,255,0.12)"/>
+      <circle cx="65"  cy="258" r="5"  fill="rgba(255,255,255,0.09)"/>
+      <circle cx="400" cy="220" r="7"  fill="rgba(255,255,255,0.11)"/>
+      <circle cx="430" cy="250" r="4"  fill="rgba(255,255,255,0.08)"/>
+      <circle cx="200" cy="260" r="6"  fill="rgba(255,255,255,0.10)"/>
+
+      <!-- 尾びれ -->
+      <path d="M 50 115 Q 20 95 15 140 Q 20 178 55 165 Z" fill="#3a6645" opacity="0.88"/>
+      <!-- 下尾びれ -->
+      <path d="M 55 155 Q 22 170 18 200 Q 35 210 65 185 Z" fill="#3a6645" opacity="0.75"/>
+
+      <!-- 体（大楕円） -->
+      <ellipse cx="235" cy="148" rx="188" ry="100" fill="#4e8558"/>
+      <!-- 腹部（明るめ） -->
+      <ellipse cx="248" cy="172" rx="148" ry="62" fill="#72ae7a"/>
+
+      <!-- 斑点 -->
+      <ellipse cx="165" cy="120" rx="22" ry="14" fill="#2d5235" opacity="0.55"/>
+      <ellipse cx="220" cy="108" rx="17" ry="11" fill="#2d5235" opacity="0.48"/>
+      <ellipse cx="278" cy="122" rx="20" ry="13" fill="#2d5235" opacity="0.52"/>
+      <ellipse cx="320" cy="112" rx="16" ry="10" fill="#2d5235" opacity="0.45"/>
+      <ellipse cx="190" cy="150" rx="14" ry="9"  fill="#2d5235" opacity="0.40"/>
+      <ellipse cx="248" cy="145" rx="18" ry="11" fill="#2d5235" opacity="0.42"/>
+      <ellipse cx="145" cy="150" rx="12" ry="8"  fill="#2d5235" opacity="0.38"/>
+      <ellipse cx="295" cy="145" rx="15" ry="9"  fill="#2d5235" opacity="0.42"/>
+      <ellipse cx="340" cy="135" rx="13" ry="8"  fill="#2d5235" opacity="0.40"/>
+
+      <!-- 背びれ -->
+      <path d="M 115 56 Q 170 32 230 50 Q 285 28 340 55 Q 300 98 230 92 Q 158 98 115 56 Z"
+            fill="#3c6a44" opacity="0.88"/>
+      <!-- 背びれ棘 -->
+      <line x1="148" y1="86" x2="140" y2="50" stroke="#2d5235" stroke-width="2" opacity="0.5"/>
+      <line x1="175" y1="80" x2="170" y2="40" stroke="#2d5235" stroke-width="2" opacity="0.5"/>
+      <line x1="202" y1="76" x2="200" y2="36" stroke="#2d5235" stroke-width="2" opacity="0.5"/>
+      <line x1="230" y1="74" x2="230" y2="34" stroke="#2d5235" stroke-width="2" opacity="0.5"/>
+      <line x1="258" y1="76" x2="260" y2="36" stroke="#2d5235" stroke-width="2" opacity="0.5"/>
+      <line x1="285" y1="80" x2="290" y2="42" stroke="#2d5235" stroke-width="2" opacity="0.5"/>
+      <line x1="312" y1="86" x2="318" y2="50" stroke="#2d5235" stroke-width="2" opacity="0.5"/>
+
+      <!-- 胸びれ（右） -->
+      <ellipse cx="330" cy="190" rx="54" ry="22" fill="#3c6a44"
+               transform="rotate(25,330,190)" opacity="0.82"/>
+
+      <!-- 頭部 -->
+      <ellipse cx="372" cy="142" rx="80" ry="82" fill="#4e8558"/>
+
+      <!-- エラ -->
+      <path d="M 308 100 Q 295 140 312 190" stroke="#3c6a44" stroke-width="3.5" fill="none" opacity="0.65"/>
+
+      <!-- 口（大きな口） -->
+      <path d="M 432 148 Q 452 168 432 178 Q 418 182 412 170 Q 418 158 432 148 Z"
+            fill="#182818"/>
+      <!-- 唇 -->
+      <path d="M 432 148 Q 445 158 432 178" stroke="#2d5235" stroke-width="2" fill="none" opacity="0.6"/>
+
+      <!-- 目 -->
+      <circle cx="400" cy="118" r="17" fill="#111808"/>
+      <circle cx="400" cy="118" r="11" fill="#1e2e10"/>
+      <circle cx="405" cy="112" r="5"  fill="rgba(255,255,255,0.65)"/>
+      <circle cx="408" cy="110" r="2"  fill="rgba(255,255,255,0.40)"/>
+
+      <!-- うろこ模様（線） -->
+      <path d="M 150 140 Q 165 125 180 140" stroke="#3a6040" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M 195 138 Q 210 122 225 138" stroke="#3a6040" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M 240 136 Q 255 120 270 136" stroke="#3a6040" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M 285 138 Q 300 122 315 138" stroke="#3a6040" stroke-width="1.2" fill="none" opacity="0.5"/>
+    </svg>
+
+    <!-- 太一の表情バッジ -->
+    <div class="taichi-badge" id="taichiBadge">
+      <div class="taichi-emoji" id="taichiEmoji">🤔</div>
+      <div class="taichi-mood"  id="taichiMood">迷い中</div>
+    </div>
+  </div>
+
+  <!-- スライダーパネル -->
+  <div class="slider-panel">
+    <div class="slider-ends">
+      <div class="end-left">⚔️ 打つ<br><small>（復讐・手柄）</small></div>
+      <div class="end-right">打たない 🕊️<br><small>（共生・命）</small></div>
+    </div>
+    <input type="range" id="decisionSlider" min="0" max="100" value="50">
+    <div class="slider-status" id="sliderStatus">—— 迷いの中にいる ——</div>
+
+    <!-- 葛藤メーター -->
+    <div class="meter-row">
+      <span>心の葛藤</span>
+      <div class="meter-track">
+        <div class="meter-fill" id="meterFill" style="width:80%"></div>
+      </div>
+      <span id="meterPct">高い</span>
+    </div>
+  </div>
+
+  <!-- 語彙注釈 -->
+  <div class="vocab-panel">
+    <h3>📖 難しい言葉（タップ・クリックで意味を確認）</h3>
+    <div class="vocab-grid">
+
+      <div class="vocab-chip" onclick="this.classList.toggle('open')">
+        <span class="vocab-word">海の主</span>
+        <span class="vocab-reading">うみのぬし</span>
+        <div class="vocab-tooltip">
+          海の中で最も大きく、力強い生きもの。<br>
+          太一がずっと夢見てきた、巨大なクエのこと。
+        </div>
+      </div>
+
+      <div class="vocab-chip" onclick="this.classList.toggle('open')">
+        <span class="vocab-word">漁師</span>
+        <span class="vocab-reading">りょうし</span>
+        <div class="vocab-tooltip">
+          魚や貝などをとることを<br>仕事にしている人。<br>
+          太一の父も村一番の漁師だった。
+        </div>
+      </div>
+
+      <div class="vocab-chip" onclick="this.classList.toggle('open')">
+        <span class="vocab-word">共生</span>
+        <span class="vocab-reading">きょうせい</span>
+        <div class="vocab-tooltip">
+          ちがう生きものが、<br>たがいにえいきょうをあたえながら<br>ともに生きること。
+        </div>
+      </div>
+
+      <div class="vocab-chip" onclick="this.classList.toggle('open')">
+        <span class="vocab-word">葛藤</span>
+        <span class="vocab-reading">かっとう</span>
+        <div class="vocab-tooltip">
+          心の中で、ちがう気持ちや<br>考えがぶつかり合って<br>苦しむこと。
+        </div>
+      </div>
+
+      <div class="vocab-chip" onclick="this.classList.toggle('open')">
+        <span class="vocab-word">手柄</span>
+        <span class="vocab-reading">てがら</span>
+        <div class="vocab-tooltip">
+          すぐれたはたらきをして<br>ほめられること。大きな成果。
+        </div>
+      </div>
+
+      <div class="vocab-chip" onclick="this.classList.toggle('open')">
+        <span class="vocab-word">復讐</span>
+        <span class="vocab-reading">ふくしゅう</span>
+        <div class="vocab-tooltip">
+          自分やたいせつな人がされた<br>ひどいことへの仕返し。<br>
+          太一は父の死に関係すると信じ<br>クエへの復讐を考えていた。
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<script>
+  // ────────────────────────────────
+  // 段階データ
+  // ────────────────────────────────
+  const STAGES = [
+    {
+      range:   [0, 15],
+      emoji:   '😠',
+      mood:    '怒り・復讐心',
+      text:    '「おとうを死なせた主を、<br>おれが打ち取ってやる！」',
+      source:  '太一の心の声（怒りのとき）',
+      status:  '⚔️　打つ！　仇を討つのだ',
+      conflict: 30,
+      meterLabel: 'やや高い',
+      bgEnd:   'rgba(140,30,30,0.6)'
+    },
+    {
+      range:   [16, 30],
+      emoji:   '😤',
+      mood:    '決意・焦り',
+      text:    '「村一番の漁師になって、<br>おとうの仇を討つのだ…！」',
+      source:  '太一の決意（焦りのとき）',
+      status:  '手柄を立てたい…！',
+      conflict: 55,
+      meterLabel: '高い',
+      bgEnd:   'rgba(160,80,20,0.6)'
+    },
+    {
+      range:   [31, 55],
+      emoji:   '🤔',
+      mood:    '迷い・葛藤',
+      text:    '「おまえは村一番の漁師になるとも、<br>海の命を奪ってはならない。」',
+      source:  '与吉じいさの言葉（本文より）',
+      status:  '—— 迷いの中にいる ——',
+      conflict: 100,
+      meterLabel: '最大！',
+      bgEnd:   'rgba(60,100,180,0.6)'
+    },
+    {
+      range:   [56, 78],
+      emoji:   '😟',
+      mood:    '躊躇・揺らぎ',
+      text:    '「このクエを打てば一人前の漁師になれる。<br>……でも、どうしても打てなかった。」',
+      source:  '太一の心の声（躊躇のとき）',
+      status:  '打てない理由が生まれてきた…',
+      conflict: 70,
+      meterLabel: '高い',
+      bgEnd:   'rgba(20,80,130,0.6)'
+    },
+    {
+      range:   [79, 100],
+      emoji:   '🌊',
+      mood:    '共生・感謝',
+      text:    '「このクエは海の命だから……。<br>おれはおとうと同じ海で生きていく。」',
+      source:  '太一の心の変化（共生の気づき）',
+      status:  '🕊️　打たない。いのちを感じた',
+      conflict: 12,
+      meterLabel: '低い',
+      bgEnd:   'rgba(10,100,80,0.5)'
+    }
+  ];
+
+  const slider      = document.getElementById('decisionSlider');
+  const bubbleText  = document.getElementById('bubbleText');
+  const bubbleSource= document.getElementById('bubbleSource');
+  const taichiEmoji = document.getElementById('taichiEmoji');
+  const taichiMood  = document.getElementById('taichiMood');
+  const sliderStatus= document.getElementById('sliderStatus');
+  const meterFill   = document.getElementById('meterFill');
+  const meterPct    = document.getElementById('meterPct');
+
+  function getStage(value) {
+    return STAGES.find(s => value >= s.range[0] && value <= s.range[1]) || STAGES[2];
+  }
+
+  function updateApp(value) {
+    const s = getStage(value);
+
+    // 吹き出し
+    bubbleText.innerHTML  = s.text;
+    bubbleSource.textContent = s.source;
+
+    // 太一の表情
+    taichiEmoji.textContent = s.emoji;
+    taichiMood.textContent  = s.mood;
+
+    // スライダーステータス
+    sliderStatus.textContent = s.status;
+
+    // 葛藤メーター
+    meterFill.style.width = s.conflict + '%';
+    meterPct.textContent  = s.meterLabel;
+
+    // 背景グラデーション
+    document.body.style.background =
+      `linear-gradient(180deg, #071020 0%, #0b2e5a 35%, #1060a0 70%, ${s.bgEnd} 100%)`;
+  }
+
+  slider.addEventListener('input', () => updateApp(parseInt(slider.value)));
+
+  // 初期表示
+  updateApp(50);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2040年の未来と子どもたちの教育 | KAEL 北田朋也</title>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #f59e0b;
+    --accent: #10b981;
+    --danger: #ef4444;
+    --bg-dark: #0f172a;
+    --bg-mid: #1e293b;
+    --bg-card: #334155;
+    --text-light: #f1f5f9;
+    --text-muted: #94a3b8;
+    --slide-width: 960px;
+    --slide-height: 540px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', 'Yu Gothic', sans-serif;
+    background: #111827;
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  /* ナビゲーション */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #334155;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+  }
+  .nav-title { font-size: 13px; color: var(--text-muted); }
+  .nav-controls { display: flex; gap: 8px; align-items: center; }
+  .nav-btn {
+    background: var(--bg-card);
+    border: none;
+    color: var(--text-light);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+  .nav-btn:hover { background: var(--primary); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .slide-counter { font-size: 13px; color: var(--text-muted); min-width: 70px; text-align: center; }
+
+  /* スライドコンテナ */
+  .slides-container {
+    margin-top: 64px;
+    width: 100%;
+    max-width: var(--slide-width);
+  }
+
+  /* スライド */
+  .slide {
+    display: none;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  /* スライドタイプ別スタイル */
+  .slide-cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .slide-section {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 40px 48px;
+  }
+  .slide-content {
+    background: #0f172a;
+    padding: 32px 48px;
+  }
+
+  /* テキストスタイル */
+  .cover-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--secondary);
+    margin-bottom: 20px;
+    background: rgba(245,158,11,0.15);
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: 1px solid rgba(245,158,11,0.3);
+    display: inline-block;
+  }
+  .cover-title {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 0%, #93c5fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cover-subtitle {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+  .cover-author {
+    font-size: 15px;
+    color: #60a5fa;
+    background: rgba(96,165,250,0.1);
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: 1px solid rgba(96,165,250,0.2);
+  }
+
+  .slide-num {
+    font-size: 11px;
+    color: var(--secondary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .slide-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #fff;
+  }
+  .slide-title-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #334155;
+  }
+
+  /* カードグリッド */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  .card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 16px 20px;
+    border: 1px solid #475569;
+    transition: border-color 0.2s;
+  }
+  .card-blue { border-left: 4px solid var(--primary); }
+  .card-yellow { border-left: 4px solid var(--secondary); }
+  .card-green { border-left: 4px solid var(--accent); }
+  .card-red { border-left: 4px solid var(--danger); }
+  .card-purple { border-left: 4px solid #a855f7; }
+
+  .card-icon { font-size: 24px; margin-bottom: 8px; }
+  .card-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .card-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* 表 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    background: var(--bg-card);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--secondary);
+    border-bottom: 2px solid #475569;
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #1e293b;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+  td strong { color: var(--text-light); }
+
+  /* 比較ボックス */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 0;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .compare-left {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .compare-right {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .compare-arrow {
+    text-align: center;
+    font-size: 24px;
+    color: var(--text-muted);
+  }
+  .compare-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .compare-label.red { color: var(--danger); }
+  .compare-label.green { color: var(--accent); }
+  .compare-item {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 2;
+  }
+  .compare-item span { color: var(--text-light); }
+
+  /* ハイライトボックス */
+  .highlight-box {
+    background: rgba(37, 99, 235, 0.1);
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+  .highlight-box.yellow {
+    background: rgba(245,158,11,0.1);
+    border-color: rgba(245,158,11,0.3);
+  }
+  .highlight-box.green {
+    background: rgba(16,185,129,0.1);
+    border-color: rgba(16,185,129,0.3);
+  }
+  .highlight-box .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--secondary);
+    margin-bottom: 8px;
+  }
+  .highlight-box.green .label { color: var(--accent); }
+  .highlight-box p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .highlight-box strong { color: var(--text-light); }
+
+  /* タイムライン */
+  .timeline { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+  .timeline-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .timeline-year {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--secondary);
+    min-width: 60px;
+    padding-top: 2px;
+  }
+  .timeline-content {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 10px 14px;
+    flex: 1;
+    border-left: 3px solid var(--primary);
+  }
+  .timeline-content .year-label { font-size: 12px; color: #60a5fa; margin-bottom: 2px; }
+  .timeline-content .year-text { font-size: 13px; color: var(--text-muted); }
+
+  /* フロー図 */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .flow-item {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+  .flow-arrow { font-size: 20px; color: var(--text-muted); flex-shrink: 0; }
+
+  /* スタッツ */
+  .stats { display: flex; gap: 16px; margin-top: 16px; }
+  .stat-item {
+    flex: 1;
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-number { font-size: 32px; font-weight: 700; color: var(--secondary); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* バッジ */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .badge-blue { background: rgba(37,99,235,0.2); color: #60a5fa; border: 1px solid rgba(37,99,235,0.3); }
+  .badge-green { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+  .badge-yellow { background: rgba(245,158,11,0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+
+  /* リスト */
+  .styled-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .styled-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .styled-list li .icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+  .styled-list li strong { color: var(--text-light); }
+
+  /* セクションヘッダー */
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+  }
+  .section-num {
+    font-size: 80px;
+    font-weight: 700;
+    color: rgba(37,99,235,0.2);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .section-chapter {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--secondary);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-title-big {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .section-subtitle { font-size: 15px; color: var(--text-muted); }
+
+  /* プログレスバー */
+  .progress-bar {
+    position: fixed;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: var(--primary);
+    transition: width 0.3s;
+    z-index: 1000;
+  }
+
+  /* 最終スライド */
+  .slide-final {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .message-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 32px 40px;
+    max-width: 680px;
+  }
+  .message-box .emoji { font-size: 48px; margin-bottom: 16px; }
+  .message-box h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .message-box p { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+  .message-box .speaker {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #60a5fa;
+  }
+
+  /* フッター */
+  .slide-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 8px 24px;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #475569;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* レスポンシブ */
+  @media (max-width: 700px) {
+    .grid-2, .grid-3, .compare { grid-template-columns: 1fr; }
+    .compare-arrow { transform: rotate(90deg); }
+    .stats { flex-direction: column; }
+    .cover-title { font-size: 26px; }
+    .slide-title { font-size: 20px; }
+  }
+
+  /* 印刷用 */
+  @media print {
+    body { background: white; padding: 0; }
+    .nav, .progress-bar { display: none; }
+    .slide { display: flex !important; page-break-after: always; border-radius: 0; box-shadow: none; }
+    .slides-container { margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ナビゲーション -->
+<nav class="nav">
+  <span class="nav-title">2040年の未来と子どもたちの教育 | KAEL 北田朋也</span>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>← 前へ</button>
+    <span class="slide-counter" id="slideCounter">1 / 18</span>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">次へ →</button>
+  </div>
+</nav>
+
+<div class="slides-container">
+
+  <!-- スライド 1: 表紙 -->
+  <div class="slide slide-cover active">
+    <div style="text-align:center; padding: 20px;">
+      <div class="cover-label">保護者向け 教育コミュニティ講演</div>
+      <div class="cover-title">2040年の未来と<br>子どもたちの教育</div>
+      <div class="cover-subtitle">〜 AI時代を生き抜く力とは何か 〜</div>
+      <div class="cover-author">北田朋也（Kyoto AI×Edu Lab / KAEL）<br>
+        <span style="font-size:12px; color:#475569; margin-top:4px; display:block;">元公立小学校教員16年 → AI×探究学習 実践研究者</span>
+      </div>
+      <div style="display:flex; gap:16px; justify-content:center; margin-top:32px; flex-wrap:wrap;">
+        <span class="badge badge-blue">🔍 探究学習</span>
+        <span class="badge badge-green">🤖 AI×教育</span>
+        <span class="badge badge-yellow">⚠️ 2040年問題</span>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – Kyoto AI×Edu Lab</span>
+      <span>2026.03.19</span>
+    </div>
+  </div>
+
+  <!-- スライド 2: 今日の流れ -->
+  <div class="slide slide-content">
+    <div class="slide-num">OVERVIEW</div>
+    <div class="slide-title">今日お伝えしたいこと</div>
+    <div class="slide-title-sub">不安を煽る話ではなく、「今日から希望を持てる話」をします</div>
+    <div class="grid-3">
+      <div class="card card-yellow">
+        <div class="card-icon">⚠️</div>
+        <div class="card-title">① 2040年問題とは</div>
+        <div class="card-text">日本社会に何が起きているのか。子どもたちの「未来の職場」はどう変わるのか。</div>
+      </div>
+      <div class="card card-blue">
+        <div class="card-icon">🌱</div>
+        <div class="card-title">② 必要な力とは</div>
+        <div class="card-text">AI時代に子どもたちに本当に必要な力は何か。学校と家庭にできることは？</div>
+      </div>
+      <div class="card card-green">
+        <div class="card-icon">🏠</div>
+        <div class="card-title">③ 家庭でできること</div>
+        <div class="card-text">保護者として今日からできる具体的なアクションをお伝えします。</div>
+      </div>
+    </div>
+    <div class="highlight-box yellow" style="margin-top:20px;">
+      <div class="label">KEY MESSAGE</div>
+      <p>「子どもたちの未来に必要なのは、<strong>答えを持っている大人</strong>ではなく、<strong>一緒に考え続けられる大人</strong>」</p>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>OVERVIEW</span>
+    </div>
+  </div>
+
+  <!-- スライド 3: セクション1 -->
+  <div class="slide slide-section">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div class="section-chapter">Chapter 1</div>
+      <div class="section-title-big">2040年問題とは何か</div>
+      <div class="section-subtitle">子どもたちが大人になる頃、日本社会は大きく変わっています</div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 1</span>
+    </div>
+  </div>
+
+  <!-- スライド 4: タイムライン -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 1 – 01</div>
+    <div class="slide-title">2025年〜2040年 日本社会の変化</div>
+    <div class="slide-title-sub">子どもたちが社会人になる頃に、日本は「臨界点」を迎えます</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-year">2025年</div>
+        <div class="timeline-content" style="border-color:#f59e0b;">
+          <div class="year-label">🧓 2025年問題</div>
+          <div class="year-text">団塊世代が全員75歳以上の「後期高齢者」に。医療・介護の需要が急増する転換点。</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2030年</div>
+        <div class="timeline-content" style="border-color:#ef4444;">
+          <div class="year-label">👷 労働力が1,400万人減少</div>
+          <div class="year-text">AIによる仕事の代替が本格化。単純作業だけでなく知的労働も変わり始める。</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2035年</div>
+        <div class="timeline-content" style="border-color:#a855f7;">
+          <div class="year-label">🏘️ 地方消滅の加速</div>
+          <div class="year-text">学校・病院の統廃合が急増。地域の担い手不足が深刻化。</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year" style="color:#ef4444;">2040年</div>
+        <div class="timeline-content" style="border-color:#ef4444; background:rgba(239,68,68,0.05);">
+          <div class="year-label" style="color:#ef4444;">⚠️ 臨界点 — 65歳以上が人口の35%</div>
+          <div class="year-text" style="color:#94a3b8;">団塊ジュニア世代が65歳を超える。今の小中学生が<strong style="color:#fff;">社会の最前線を担う世代</strong>になる。</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 1 – 01</span>
+    </div>
+  </div>
+
+  <!-- スライド 5: 数字で見る2040年 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 1 – 02</div>
+    <div class="slide-title">数字で見る2040年の日本</div>
+    <div class="slide-title-sub">変化のスケールを正しく知ることが、未来への準備の第一歩</div>
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-number">35<span style="font-size:16px;">%</span></div>
+        <div class="stat-label">65歳以上の人口比率<br><span style="color:#475569;">現在：約29%</span></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">▲<span style="font-size:24px;">1,200</span><span style="font-size:14px;">万人</span></div>
+        <div class="stat-label">働く世代の減少<br><span style="color:#475569;">現在約7,200万人→6,000万人</span></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">896</div>
+        <div class="stat-label">消滅可能性のある<br>市区町村数</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">1.4<span style="font-size:16px;">倍</span></div>
+        <div class="stat-label">社会保障費の増大<br><span style="color:#475569;">134兆円→約190兆円</span></div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:20px;">
+      <div class="label">💡 親世代にとってのリアル</div>
+      <p>今小学6年生（12歳）の子どもは、2040年には<strong>26歳・社会人6年目</strong>。まさにその臨界点の年に、最前線で働いている世代です。</p>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 1 – 02</span>
+    </div>
+  </div>
+
+  <!-- スライド 6: AIと仕事 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 1 – 03</div>
+    <div class="slide-title">AIによって変わる仕事の世界</div>
+    <div class="slide-title-sub">「AIに仕事を奪われる」ではなく「AIを使う人が求められる」時代へ</div>
+    <div class="compare">
+      <div class="compare-left">
+        <div class="compare-label red">❌ 代替されやすい仕事</div>
+        <div class="compare-item">
+          📋 <span>データ入力・定型処理</span><br>
+          📞 <span>定型的な電話・受付対応</span><br>
+          🚚 <span>単純な輸送・配送業務</span><br>
+          📊 <span>定型レポートの作成</span><br>
+          🔢 <span>計算・集計・転記作業</span>
+        </div>
+      </div>
+      <div class="compare-arrow">→</div>
+      <div class="compare-right">
+        <div class="compare-label green">✅ 残る・生まれる仕事</div>
+        <div class="compare-item">
+          🤝 <span>人との深い対話・ケア</span><br>
+          🎨 <span>創造・表現・デザイン</span><br>
+          🧩 <span>複雑な問題の解決</span><br>
+          🌱 <span>AIを使う人材・設計者</span><br>
+          💬 <span>感情・倫理・価値判断</span>
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box green" style="margin-top:16px;">
+      <div class="label">🎯 POINT</div>
+      <p>現在存在する仕事の<strong>3〜5割がAIに代替</strong>される可能性がある一方、<strong>AIを使いこなす人材</strong>の需要は急増。子どもたちに必要なのは「AIと共存する力」。</p>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 1 – 03</span>
+    </div>
+  </div>
+
+  <!-- スライド 7: セクション2 -->
+  <div class="slide slide-section">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div class="section-chapter">Chapter 2</div>
+      <div class="section-title-big">2040年に必要な力とは</div>
+      <div class="section-subtitle">テストの点数だけでは測れない「本当の力」を育てる</div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 2</span>
+    </div>
+  </div>
+
+  <!-- スライド 8: 6つの力 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 2 – 01</div>
+    <div class="slide-title">2040年に必要な「6つの力」</div>
+    <div class="slide-title-sub">経団連・文科省・OECDが共通して示す未来の人間像</div>
+    <div class="grid-3">
+      <div class="card card-blue">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">探究力</div>
+        <div class="card-text">自分で問いを立て、仮説を検証し、更新し続けられる力</div>
+      </div>
+      <div class="card card-green">
+        <div class="card-icon">🤝</div>
+        <div class="card-title">対話・共創力</div>
+        <div class="card-text">異なる価値観と共に考え、協働して問題解決できる力</div>
+      </div>
+      <div class="card card-purple">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">AIリテラシー</div>
+        <div class="card-text">AIを使いこなし、批判的に評価しながら活用できる力</div>
+      </div>
+      <div class="card card-yellow">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">自己調整力</div>
+        <div class="card-text">自分の学びをデザインし、振り返り、改善できる力</div>
+      </div>
+      <div class="card card-red">
+        <div class="card-icon">🌀</div>
+        <div class="card-title">不確実性耐性</div>
+        <div class="card-text">正解のない問いに向き合い、失敗を学びに変えられる力</div>
+      </div>
+      <div class="card card-green">
+        <div class="card-icon">🌏</div>
+        <div class="card-title">市民性・コミュニティ力</div>
+        <div class="card-text">地域・社会に関わり続け、ローカルとグローバルをつなぐ力</div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 2 – 01</span>
+    </div>
+  </div>
+
+  <!-- スライド 9: 今の教育 vs これからの教育 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 2 – 02</div>
+    <div class="slide-title">「テストの点数」と「本当に必要な力」の違い</div>
+    <div class="slide-title-sub">「学校の成績がいいこと」と「2040年を生き抜く力があること」は必ずしも同じではない</div>
+    <div class="compare">
+      <div class="compare-left">
+        <div class="compare-label red">今の学校が重視すること</div>
+        <div class="compare-item">
+          📝 <span>正解を速く出す力</span><br>
+          📚 <span>知識を記憶する力</span><br>
+          👥 <span>みんなと同じにできる</span><br>
+          🙋 <span>先生の指示に従う力</span><br>
+          📊 <span>点数・順位で評価</span>
+        </div>
+      </div>
+      <div class="compare-arrow">→</div>
+      <div class="compare-right">
+        <div class="compare-label green">2040年に必要なこと</div>
+        <div class="compare-item">
+          🔍 <span>問いを立てる力</span><br>
+          🧩 <span>知識を組み合わせる力</span><br>
+          🌈 <span>自分らしく表現できる</span><br>
+          🎯 <span>自分で判断し動く力</span><br>
+          📁 <span>成長のプロセスが認められる</span>
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:16px;">
+      <div class="label">💡 大切なのは成績の裏側</div>
+      <p>成績の裏にある<strong>「学び方」と「姿勢」</strong>こそが、2040年の力につながります。テストの点ではなく、<strong>「どう考えたか」「失敗からどう立ち直ったか」</strong>を見てあげましょう。</p>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 2 – 02</span>
+    </div>
+  </div>
+
+  <!-- スライド 10: セクション3 -->
+  <div class="slide slide-section">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div class="section-chapter">Chapter 3</div>
+      <div class="section-title-big">AI時代の教育はどう変わるか</div>
+      <div class="section-subtitle">学校・家庭・地域が連携して子どもを育てる時代へ</div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 3</span>
+    </div>
+  </div>
+
+  <!-- スライド 11: 教育の5つの変化 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 3 – 01</div>
+    <div class="slide-title">教育に起きている「5つの大転換」</div>
+    <div class="slide-title-sub">「教える学校」から「育ちを支える場所」へ</div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div class="card card-yellow" style="padding:12px 16px;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <span style="font-size:20px;">👦</span>
+          <div>
+            <div class="card-title" style="font-size:14px;">転換①：子どもが「学びの主役」になる</div>
+            <div class="card-text">先生が教えるのではなく、子どもが問いを立て、先生がサポートする構造へ</div>
+          </div>
+        </div>
+      </div>
+      <div class="card card-blue" style="padding:12px 16px;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <span style="font-size:20px;">🌍</span>
+          <div>
+            <div class="card-title" style="font-size:14px;">転換②：学校の外も「学びの場」になる</div>
+            <div class="card-text">地域・企業・自然・オンライン——多様な学び場のネットワークへ</div>
+          </div>
+        </div>
+      </div>
+      <div class="card card-green" style="padding:12px 16px;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <span style="font-size:20px;">🧑‍🏫</span>
+          <div>
+            <div class="card-title" style="font-size:14px;">転換③：先生が「インストラクター」から「ファシリテーター」へ</div>
+            <div class="card-text">知識を伝えるプロ → 学びをデザインし、子どもと深く向き合うプロへ</div>
+          </div>
+        </div>
+      </div>
+      <div class="card card-purple" style="padding:12px 16px;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <span style="font-size:20px;">🤖</span>
+          <div>
+            <div class="card-title" style="font-size:14px;">転換④：AIが個別最適な学びをサポートする</div>
+            <div class="card-text">AIチューターが「問いを深める対話相手」として機能し、個別のペースで学べる</div>
+          </div>
+        </div>
+      </div>
+      <div class="card card-red" style="padding:12px 16px;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <span style="font-size:20px;">📁</span>
+          <div>
+            <div class="card-title" style="font-size:14px;">転換⑤：評価が「点数」から「プロセスと成長」へ</div>
+            <div class="card-text">一発テストではなく、継続的な学びの記録・ポートフォリオで「成長」を見る</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 3 – 01</span>
+    </div>
+  </div>
+
+  <!-- スライド 12: AI教育の実際 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 3 – 02</div>
+    <div class="slide-title">AIと子どもたちの学び——正しい使い方</div>
+    <div class="slide-title-sub">「禁止」でも「丸投げ」でもなく、「賢く使う力」を育てる</div>
+    <div class="compare">
+      <div class="compare-left">
+        <div class="compare-label red">❌ 避けたい関わり方</div>
+        <div class="compare-item">
+          🚫 <span>AIへの丸投げ（宿題を解かせる）</span><br>
+          🚫 <span>答えをそのままコピーする</span><br>
+          🚫 <span>AIを信じすぎる（批判なし）</span><br>
+          🚫 <span>禁止して使わせない</span><br>
+          🚫 <span>子どもだけで使わせる</span>
+        </div>
+      </div>
+      <div class="compare-arrow">→</div>
+      <div class="compare-right">
+        <div class="compare-label green">✅ 理想的な関わり方</div>
+        <div class="compare-item">
+          ✅ <span>AIと「対話」して考えを深める</span><br>
+          ✅ <span>AIの回答を「批判的に評価」する</span><br>
+          ✅ <span>「なぜ？」をAIに問い続ける</span><br>
+          ✅ <span>保護者も一緒に体験してみる</span><br>
+          ✅ <span>使った後に「何がわかった？」と話す</span>
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box green" style="margin-top:16px;">
+      <div class="label">🎯 KEY CONCEPT</div>
+      <p>AIは「答えを教えるもの」ではなく、<strong>「問いを深める対話の相手」</strong>として使うのが理想。子どもが<strong>「AIに頼る」のではなく「AIと考える」</strong>力を育てましょう。</p>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 3 – 02</span>
+    </div>
+  </div>
+
+  <!-- スライド 13: 実践事例 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 3 – 03</div>
+    <div class="slide-title">実践事例：あおいカレッジ（京都市立葵小学校）</div>
+    <div class="slide-title-sub">子どもが「主役」になる探究学習で、主体性が大きく伸びた</div>
+    <div class="grid-2">
+      <div>
+        <div style="margin-bottom:16px;">
+          <div class="card card-blue" style="padding:16px;">
+            <div class="card-icon">📊</div>
+            <div class="card-title">「主体的に学べたか？」アンケート結果</div>
+            <div style="display:flex; align-items:flex-end; gap:16px; margin-top:12px;">
+              <div style="text-align:center;">
+                <div style="font-size:36px; font-weight:700; color:#ef4444;">58<span style="font-size:18px;">%</span></div>
+                <div style="font-size:11px; color:#64748b;">2019年（開始時）</div>
+              </div>
+              <div style="font-size:24px; color:#475569;">→</div>
+              <div style="text-align:center;">
+                <div style="font-size:36px; font-weight:700; color:#10b981;">87<span style="font-size:18px;">%</span></div>
+                <div style="font-size:11px; color:#64748b;">2023年（4年後）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="highlight-box yellow">
+          <div class="label">📝 プログラムの特徴</div>
+          <p style="font-size:13px;">5・6年生の<strong>異年齢・探究学習</strong>。子どもが問いを立て、地域・企業と連携しながら取り組む。2022年度 市教育研究論文コンクール<strong>優秀賞受賞</strong>。</p>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="height:100%; padding:20px;">
+          <div class="card-title" style="margin-bottom:12px;">子どもたちの変化</div>
+          <ul class="styled-list">
+            <li><span class="icon">🔍</span><div><strong>自分で問いを立てる</strong><br><span style="font-size:12px;">「先生、これってなんで？」が増えた</span></div></li>
+            <li><span class="icon">🤝</span><div><strong>異年齢で協力する</strong><br><span style="font-size:12px;">5年生と6年生が自然に教え合う文化</span></div></li>
+            <li><span class="icon">💪</span><div><strong>失敗を恐れなくなる</strong><br><span style="font-size:12px;">「うまくいかなかったけど〇〇がわかった」</span></div></li>
+            <li><span class="icon">🌱</span><div><strong>地域とつながる</strong><br><span style="font-size:12px;">商店街・企業・地域の大人と本物の対話</span></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 3 – 03</span>
+    </div>
+  </div>
+
+  <!-- スライド 14: セクション4 -->
+  <div class="slide slide-section">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div class="section-chapter">Chapter 4</div>
+      <div class="section-title-big">家庭でできること</div>
+      <div class="section-subtitle">保護者として今日からできる「3つの柱」</div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 4</span>
+    </div>
+  </div>
+
+  <!-- スライド 15: 3つの柱 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 4 – 01</div>
+    <div class="slide-title">AI時代の子育て「3つの柱」</div>
+    <div class="slide-title-sub">難しいことは何もない。いつもの会話から始められます</div>
+    <div class="grid-3">
+      <div class="card card-red" style="padding:20px;">
+        <div style="font-size:40px; margin-bottom:12px;">💪</div>
+        <div class="card-title" style="font-size:16px; margin-bottom:10px;">① 失敗を恐れない<br>文化をつくる</div>
+        <ul class="styled-list" style="gap:6px;">
+          <li><span class="icon">💬</span><span style="font-size:12px;">「失敗した」より<br>「何がわかった？」</span></li>
+          <li><span class="icon">🏆</span><span style="font-size:12px;">結果より<strong>挑戦したこと</strong>を褒める</span></li>
+          <li><span class="icon">🌱</span><span style="font-size:12px;">親自身も失敗を語れる家庭に</span></li>
+        </ul>
+      </div>
+      <div class="card card-blue" style="padding:20px;">
+        <div style="font-size:40px; margin-bottom:12px;">🔍</div>
+        <div class="card-title" style="font-size:16px; margin-bottom:10px;">② 問いかけを<br>大切にする</div>
+        <ul class="styled-list" style="gap:6px;">
+          <li><span class="icon">💬</span><span style="font-size:12px;">「なんで？」「どう思う？」<br>を一緒に考える</span></li>
+          <li><span class="icon">📖</span><span style="font-size:12px;">答えを教えすぎず<br>「調べてみようか」</span></li>
+          <li><span class="icon">🤖</span><span style="font-size:12px;">AIの答えに「本当に？」と問う</span></li>
+        </ul>
+      </div>
+      <div class="card card-green" style="padding:20px;">
+        <div style="font-size:40px; margin-bottom:12px;">🌿</div>
+        <div class="card-title" style="font-size:16px; margin-bottom:10px;">③ 体験・経験を<br>積ませる</div>
+        <ul class="styled-list" style="gap:6px;">
+          <li><span class="icon">🍳</span><span style="font-size:12px;">料理・旅行・地域活動<br>本物の体験こそ最高の学び</span></li>
+          <li><span class="icon">❤️</span><span style="font-size:12px;">「好きなこと」を<br>とことん応援する</span></li>
+          <li><span class="icon">🏘️</span><span style="font-size:12px;">地域の人とつながる機会を</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 4 – 01</span>
+    </div>
+  </div>
+
+  <!-- スライド 16: 声かけのヒント -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 4 – 02</div>
+    <div class="slide-title">具体的な声かけのヒント</div>
+    <div class="slide-title-sub">ほんの少し言葉を変えるだけで、子どもの学びへの姿勢が変わります</div>
+    <table>
+      <thead>
+        <tr>
+          <th>こんな場面</th>
+          <th>❌ 避けたい声かけ</th>
+          <th>✅ おすすめの声かけ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>テストの点が低かった</td>
+          <td style="color:#ef4444;">「なんでこんな点数なの？」</td>
+          <td style="color:#10b981;">「どこが難しかった？次はどうしたい？」</td>
+        </tr>
+        <tr>
+          <td>子どもが失敗した</td>
+          <td style="color:#ef4444;">「だから言ったでしょ」</td>
+          <td style="color:#10b981;">「失敗できたね。何がわかった？」</td>
+        </tr>
+        <tr>
+          <td>「なぜ？」と聞いてきた</td>
+          <td style="color:#ef4444;">「そういうものなの」</td>
+          <td style="color:#10b981;">「面白い疑問だね。一緒に調べてみよう」</td>
+        </tr>
+        <tr>
+          <td>AIを使いたがる</td>
+          <td style="color:#ef4444;">「それはズルだよ」</td>
+          <td style="color:#10b981;">「AIが何を言ったか教えて。本当にそうかな？」</td>
+        </tr>
+        <tr>
+          <td>好きなことに夢中</td>
+          <td style="color:#ef4444;">「それより勉強しなさい」</td>
+          <td style="color:#10b981;">「そこまで好きなら、なんでそれが好きなの？」</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-box yellow" style="margin-top:16px;">
+      <div class="label">💡 POINT</div>
+      <p>「正解を与える親」より「一緒に考える親」の方が、子どもの探究力は伸びます。<strong>「わからない」を一緒に楽しめる</strong>関係が最高の教育環境です。</p>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 4 – 02</span>
+    </div>
+  </div>
+
+  <!-- スライド 17: AIとの付き合い方 -->
+  <div class="slide slide-content">
+    <div class="slide-num">CHAPTER 4 – 03</div>
+    <div class="slide-title">AIとの付き合い方：家庭でできること</div>
+    <div class="slide-title-sub">「使わせない」でも「丸投げ」でもない。賢く使える人間に育てる</div>
+    <div class="grid-2">
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="card card-blue" style="padding:14px 16px;">
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-size:22px;">👨‍👩‍👧</span>
+            <div>
+              <div class="card-title" style="font-size:13px;">一緒に使ってみる（保護者も体験）</div>
+              <div class="card-text">「ちょっと一緒にChatGPTに聞いてみよう」から始めましょう。親がAIを体験すると会話が生まれます。</div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-green" style="padding:14px 16px;">
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-size:22px;">🔍</span>
+            <div>
+              <div class="card-title" style="font-size:13px;">使った後に「なぜ？」を確認する</div>
+              <div class="card-text">「AIが〇〇って言ったけど、なぜそう思う？」と問い返す習慣で批判的思考が育ちます。</div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-yellow" style="padding:14px 16px;">
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-size:22px;">⚖️</span>
+            <div>
+              <div class="card-title" style="font-size:13px;">「AIが得意なこと」「人間にしかできないこと」を話し合う</div>
+              <div class="card-text">「AIはどこまでできると思う？」の対話が最高のAIリテラシー教育です。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px; height:100%;">
+        <div class="card-title" style="margin-bottom:12px;">🏠 家庭でのAI活用アイデア</div>
+        <ul class="styled-list">
+          <li><span class="icon">🍳</span><div><strong>料理の献立を一緒に考える</strong><br><span style="font-size:12px;">冷蔵庫の食材でAIに聞いて、自分でアレンジ</span></div></li>
+          <li><span class="icon">📖</span><div><strong>調べ物の「仮説」をまず自分で立てる</strong><br><span style="font-size:12px;">AIで確認する前に「どう思う？」</span></div></li>
+          <li><span class="icon">✈️</span><div><strong>旅行の計画を子どもに任せる</strong><br><span style="font-size:12px;">AIを使って調べ、プレゼンさせてみる</span></div></li>
+          <li><span class="icon">💬</span><div><strong>ニュースについてAIに聞いて議論する</strong><br><span style="font-size:12px;">「AIはこう言ってるけど、あなたはどう思う？」</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – 北田朋也</span><span>CHAPTER 4 – 03</span>
+    </div>
+  </div>
+
+  <!-- スライド 18: まとめ -->
+  <div class="slide slide-final">
+    <div class="message-box">
+      <div class="emoji">🌱</div>
+      <h2>子どもたちは、正解のない時代を生きていく。<br>だからこそ、一緒に「問い」続けましょう。</h2>
+      <p>
+        子どもたちの未来に必要なのは、<strong style="color:#fff;">答えを持っている大人</strong>ではなく、<br>
+        <strong style="color:#fff;">一緒に考え続けられる大人</strong>です。<br><br>
+        学校だけでなく、家庭で、地域で、<br>
+        大人たちが一緒に学び続けることが、<br>
+        子どもたちへの<strong style="color:#fcd34d;">最大のプレゼント</strong>です。
+      </p>
+      <div class="speaker">
+        北田朋也（Kyoto AI×Edu Lab / KAEL）<br>
+        <span style="font-size:11px; color:#475569;">元公立小学校教員16年 | AI×探究学習 実践研究者 | 京都市</span>
+      </div>
+    </div>
+    <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; justify-content:center;">
+      <span class="badge badge-blue">🔍 探究学習</span>
+      <span class="badge badge-green">🤖 AI×教育</span>
+      <span class="badge badge-yellow">🌏 2040年問題</span>
+      <span class="badge badge-blue">🏘️ コミュニティ</span>
+      <span class="badge badge-green">😊 ウェルビーイング</span>
+    </div>
+    <div class="slide-footer">
+      <span>KAEL – Kyoto AI×Edu Lab</span>
+      <span>ご清聴ありがとうございました</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- プログレスバー -->
+<div class="progress-bar" id="progressBar"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let current = 0;
+
+  function updateDisplay() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    document.getElementById('slideCounter').textContent = `${current + 1} / ${totalSlides}`;
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === totalSlides - 1;
+    document.getElementById('progressBar').style.width = `${((current + 1) / totalSlides) * 100}%`;
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < totalSlides) {
+      current = next;
+      updateDisplay();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  // キーボード操作
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      changeSlide(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      changeSlide(-1);
+    }
+  });
+
+  // スワイプ操作
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+  });
+
+  updateDisplay();
+</script>
+</body>
+</html>
