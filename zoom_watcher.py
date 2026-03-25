@@ -92,12 +92,17 @@ def _parse_output(output: str) -> tuple[str, str]:
 
 
 # ── 保存 & Git push ───────────────────────────────────────
-def save_and_push(save_path: str, content: str) -> None:
+def save_to_vault(save_path: str, content: str) -> Path:
+    """Obsidian vaultにファイルを保存する（git pushはしない）"""
     note_path = VAULT_DIR / save_path
     note_path.parent.mkdir(parents=True, exist_ok=True)
     note_path.write_text(content, encoding="utf-8")
     print(f"  ✅ 保存: {note_path.relative_to(VAULT_DIR)}")
+    return note_path
 
+
+def push_to_vault(note_path: Path) -> None:
+    """nalba-ai-education-report（Obsidian vault）にpushする"""
     subprocess.run(["git", "add", str(note_path)], cwd=VAULT_DIR, check=True)
     subprocess.run(
         ["git", "commit", "-m", f"add: {note_path.name}（Zoom自動変換）"],
@@ -105,11 +110,11 @@ def save_and_push(save_path: str, content: str) -> None:
         check=True,
     )
     subprocess.run(["git", "push"], cwd=VAULT_DIR, check=True)
-    print("  ✅ Obsidian vault push完了")
+    print("  ✅ nalba-ai-education-report push完了")
 
 
 def push_to_kaetsu(note_name: str, content: str) -> None:
-    """かえつ有明リポジトリにもプッシュする"""
+    """kaetsu-ai-kenshuリポジトリにpushする"""
     note_path = KAETSU_DIR / note_name
     note_path.write_text(content, encoding="utf-8")
     print(f"  ✅ かえつリポジトリに保存: {note_name}")
@@ -121,7 +126,7 @@ def push_to_kaetsu(note_name: str, content: str) -> None:
         check=True,
     )
     subprocess.run(["git", "push"], cwd=KAETSU_DIR, check=True)
-    print("  ✅ かえつリポジトリ push完了")
+    print("  ✅ kaetsu-ai-kenshu push完了")
 
 
 # ── ファイル監視 ──────────────────────────────────────────
@@ -160,13 +165,15 @@ class ZoomHandler(FileSystemEventHandler):
 
         try:
             save_path, content = convert_with_claude(path, meeting_name, meeting_date)
-            save_and_push(save_path, content)
+            note_path = save_to_vault(save_path, content)
 
-            # かえつ有明の研修はかえつリポジトリにも追加プッシュ
             if any(kw in meeting_name.lower() for kw in KAETSU_KEYWORDS):
+                # かえつ有明 → kaetsu-ai-kenshu のみにpush
                 note_name = Path(save_path).name
-                print(f"  📂 かえつリポジトリにも追加プッシュします: {note_name}")
                 push_to_kaetsu(note_name, content)
+            else:
+                # その他 → nalba-ai-education-report にpush
+                push_to_vault(note_path)
 
             print(f"  🎉 完了: {save_path}\n")
         except Exception as e:
